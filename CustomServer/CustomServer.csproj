@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>CustomServeer</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ClCompile Include="myCProgram.cpp" />
+      <ClCompile Include="tempCpp.cpp" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="b.dylib">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="a.dylib">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+</Project>
