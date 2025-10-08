@@ -6,14 +6,14 @@ Console.WriteLine("Hello, World!");
 var builder = new ApplicationBuilder();
 
 var router = new Router();
-router.Register("/api/demo", async context =>
-{
-    // do something
-    context.Response.StatusCode = 202;
-    context.Response.Headers.Add("Content-Type", "text/plain");
-    context.Response.Body = "My first respone!";
-    Console.WriteLine($"At route: request body-{context.Request.RequestBody}");
-});
+// router.Register("/api/demo", async context =>
+// {
+//     // do something
+//     context.Response.StatusCode = 202;
+//     context.Response.Headers.Add("Content-Type", "text/plain");
+//     context.Response.Body = "My first respone!";
+//     Console.WriteLine($"At route: request body-{context.Request.RequestBody}");
+// });
 
 builder.Use(async (context, next) =>
 {
