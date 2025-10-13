@@ -14,3 +14,4 @@
 /Users/purple_ghost/RiderProjects/CustomServeer/CustomServer/obj/Debug/net8.0/CustomServer.pdb
 /Users/purple_ghost/RiderProjects/CustomServeer/CustomServer/obj/Debug/net8.0/CustomServer.genruntimeconfig.cache
 /Users/purple_ghost/RiderProjects/CustomServeer/CustomServer/obj/Debug/net8.0/ref/CustomServer.dll
+/Users/purple_ghost/RiderProjects/CustomServeer/CustomServer/obj/Debug/net8.0/CustomServer.sourcelink.json

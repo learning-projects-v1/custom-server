@@ -36,22 +36,26 @@ public class CustomServer
         using (client)
         {
             await using var stream = client.GetStream();
-            var buffer = new Byte[2048];
+            var buffer = new Byte[4096];
             var totalBytesRead = 0;
             Memory<byte> memory = buffer;
+            StringBuilder requestString = new StringBuilder();
             while (totalBytesRead < buffer.Length)
             {
                 var byteCount = await stream.ReadAsync(memory.Slice(totalBytesRead));
-                if (byteCount == 0) break;
+                var currentString = Encoding.UTF8.GetString(memory.Span.Slice(totalBytesRead, byteCount));
+                requestString.Append(currentString);
                 totalBytesRead += byteCount;
+                
+                if (currentString.IndexOf("\r\n") != -1 || currentString.Length == 0) break;
             }
             Console.WriteLine($"Total received {totalBytesRead} bytes from client");
         
-            var requestString = Encoding.ASCII.GetString(memory.Span);
-            var httpContext = ParseHttpContext(client, requestString);
+            // var requestString = Encoding.ASCII.GetString(memory.Span);
+            var httpContext = ParseHttpContext(client, requestString.ToString());
             await _pipeline(httpContext);
             
-            var responseMessage = $"HTTP/1.1 {httpContext.Response.StatusCode} OK\r\n Content-Type: text/plain\r\n \r\n{httpContext.Response.Body} \r\n";
+            var responseMessage = $"HTTP/1.1 {httpContext.Response.StatusCode} OK\r\nContent-Type: text/plain\r\n\r\n{httpContext.Response.Body} \r\n";
             await stream.WriteAsync(Encoding.ASCII.GetBytes(responseMessage));
             //
             // int sum = NativeLogic.CalculateSum(10, 12);
