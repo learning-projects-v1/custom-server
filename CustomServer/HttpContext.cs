@@ -1,4 +1,5 @@
 using System.Net.Sockets;
+using System.Text;
 
 namespace CustomServeer;
 public class HttpRequest
@@ -19,6 +20,10 @@ public class HttpResponse
     public Dictionary<string, string> Headers { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     public bool HasStarted { get; set; }
 
+    public HttpResponse()
+    {
+        Headers.Add("Server", "MyCustomServer");
+    }
     public void StartResponse()
     {
         HasStarted = true;
@@ -40,6 +45,53 @@ public class HttpContext : IDisposable
         }
         Client = client;
     }
+
+    public string GetResponse()
+    {
+        var response = new StringBuilder();
+        response.Append($"{Request.Version} {Response.StatusCode} {GetStatusText(Response.StatusCode)}\r\n");
+        response
+            .Append(Request.Version)
+            .Append(" ")
+            .Append(Response.StatusCode)
+            .Append(" ")
+            .Append(Response.StatusText)
+            .Append("\r\n");
+        
+        
+        if (!Response.Headers.ContainsKey("Date"))
+            Response.Headers["Date"] = DateTime.UtcNow.ToString("R");
+
+        if (!Response.Headers.ContainsKey("Server"))
+            Response.Headers["Server"] = "CustomServer/1.0";
+        
+        foreach (var responseHeader in Response.Headers)
+        {
+            response
+                .Append(responseHeader.Key + ": " + responseHeader.Value)
+                .Append("\r\n");
+        }
+
+        response.Append("\r\n");
+        response.Append(Response.Body);
+        return response.ToString();
+    }
+    
+    
+    private string GetStatusText(int code) => code switch
+    {
+        200 => "OK",
+        201 => "Created",
+        204 => "No Content",
+        301 => "Moved Permanently",
+        302 => "Found",
+        400 => "Bad Request",
+        401 => "Unauthorized",
+        403 => "Forbidden",
+        404 => "Not Found",
+        500 => "Internal Server Error",
+        _ => "Unknown"
+    };
     
     public void Dispose()
     {

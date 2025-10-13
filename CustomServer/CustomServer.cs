@@ -55,7 +55,8 @@ public class CustomServer
             var httpContext = ParseHttpContext(client, requestString.ToString());
             await _pipeline(httpContext);
             
-            var responseMessage = $"HTTP/1.1 {httpContext.Response.StatusCode} OK\r\nContent-Type: text/plain\r\n\r\n{httpContext.Response.Body} \r\n";
+            var responseMessage = httpContext.GetResponse();
+            //var responseMessage = $"HTTP/1.1 {httpContext.Response.StatusCode} OK\r\nContent-Type: text/plain\r\n\r\n{httpContext.Response.Body} \r\n";
             await stream.WriteAsync(Encoding.ASCII.GetBytes(responseMessage));
             //
             // int sum = NativeLogic.CalculateSum(10, 12);
@@ -109,7 +110,5 @@ public class CustomServer
         
         return httpContext;
     }
-    
-    
     
 }
