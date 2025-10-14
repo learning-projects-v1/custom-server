@@ -1,25 +1,12 @@
+using System.Net;
 using System.Reflection;
+using System.Text.Json;
 
 namespace CustomServeer;
 
 public class Router
 {
     private readonly Dictionary<(string method, string path), RequestDelegate> _routes = new(); // method, path 
-
-    // public void Register(string route, RequestDelegate func)
-    // {
-    //     _routes.Add(route, func);
-    // }
-
-    // public RequestDelegate GetRoute(string route)
-    // {
-    //     if (_routes.TryGetValue(route, out var func))
-    //     {
-    //         return func;
-    //     }
-    //     return null;
-    // }
-
     public void MapControllers(Assembly assembly)
     {
         var controllerTypes = assembly
@@ -33,17 +20,23 @@ public class Router
                 var httpMethodAttribute = method.GetCustomAttributes<HttpMethodAttribute>();
                 foreach (var attribute in httpMethodAttribute)
                 {
-                    _routes.Add((attribute.Method, attribute.Path) , ( async context =>
+                    _routes.Add((attribute.Method.ToUpper(), attribute.Path.ToLower()) , ( async context =>
                     {
                         var controllerInstance = Activator.CreateInstance(controllerType, Array.Empty<object>());
                         var result = method.Invoke(controllerInstance, Array.Empty<object>());
-                        if (result is HttpResponse response)
+
+                        switch (result)
                         {
-                            context.Response = response;
-                        }
-                        else if (result is string str)
-                        {
-                            context.Response = new() {Body = str, StatusCode = 200, StatusText = "ok"};
+                            case HttpResponse response:
+                                context.Response =  response;
+                                break;
+                            case IActionResult actionResult:
+                                actionResult.Execute(context);
+                                break;
+                            default:
+                                var json = JsonSerializer.Serialize(result);
+                                context.Response.Body = json;
+                                break;
                         }
 
                         Console.WriteLine($"Mapped {attribute.Method} and {attribute.Path} -> {controllerType.Name}:{method.Name}");
@@ -56,7 +49,7 @@ public class Router
     {
         return context =>
         {
-            if (_routes.TryGetValue((context.Request.Method, context.Request.Path), out var handler))
+            if (_routes.TryGetValue((context.Request.Method, context.Request.Path.ToLower()), out var handler))
             {
                 handler(context);
             }

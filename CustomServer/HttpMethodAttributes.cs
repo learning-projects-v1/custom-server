@@ -8,33 +8,33 @@ public abstract class HttpMethodAttribute: Attribute
 
     public HttpMethodAttribute(string method, string path)
     {
-        path = path;
+        Path = path;
         Method = method;
     }
 }
 
 public class HttpGetAttribute : HttpMethodAttribute
 {
-    public HttpGetAttribute(string method, string path) : base(method, path) { }
+    public HttpGetAttribute(string path) : base("GET", path) { }
 }
 
 public class HttpPostAttribute : HttpMethodAttribute
 {
-    public HttpPostAttribute(string method, string path) : base(method, path)
+    public HttpPostAttribute(string path) : base("POST", path)
     {
     }
 }
 
 public class HttpPutAttribute : HttpMethodAttribute
 {
-    public HttpPutAttribute(string method, string path) : base(method, path)
+    public HttpPutAttribute(string path) : base("PUT", path)
     {
     }
 }
 
 public class HttpDeleteAttribute : HttpMethodAttribute
 {
-    public HttpDeleteAttribute(string method, string path) : base(method, path)
+    public HttpDeleteAttribute(string path) : base("DELETE", path)
     {
     }
 }

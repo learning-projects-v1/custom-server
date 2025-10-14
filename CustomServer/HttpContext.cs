@@ -15,14 +15,13 @@ public class HttpResponse
 {
     public int StatusCode { get; set; } = 200;
     public string StatusText { get; set; } = "Ok";
-    public string ContentType { get; set; } = "text/plain";
     public string Body { get; set; } = String.Empty;
     public Dictionary<string, string> Headers { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     public bool HasStarted { get; set; }
 
-    public HttpResponse()
+    public void SetHeader(string key, string value)
     {
-        Headers.Add("Server", "MyCustomServer");
+        Headers[key] = value;
     }
     public void StartResponse()
     {
@@ -50,15 +49,6 @@ public class HttpContext : IDisposable
     {
         var response = new StringBuilder();
         response.Append($"{Request.Version} {Response.StatusCode} {GetStatusText(Response.StatusCode)}\r\n");
-        response
-            .Append(Request.Version)
-            .Append(" ")
-            .Append(Response.StatusCode)
-            .Append(" ")
-            .Append(Response.StatusText)
-            .Append("\r\n");
-        
-        
         if (!Response.Headers.ContainsKey("Date"))
             Response.Headers["Date"] = DateTime.UtcNow.ToString("R");
 

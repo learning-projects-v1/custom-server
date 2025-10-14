@@ -1,11 +1,14 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.Reflection;
 using CustomServeer;
 
 Console.WriteLine("Hello, World!");
 var builder = new ApplicationBuilder();
 
 var router = new Router();
+router.MapControllers(Assembly.GetExecutingAssembly());
+
 builder.Use(async (context, next) =>
 {
     await router.Build()(context);

@@ -14,7 +14,6 @@ public class CustomServer
         _port = port;
         _pipeline = pipeline;
         _listener = new TcpListener(_ipAddress, port);
-        
     }
     
     public async Task StartServer()

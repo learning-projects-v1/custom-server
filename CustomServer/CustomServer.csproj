@@ -9,11 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ClCompile Include="myCProgram.cpp" />
-      <ClCompile Include="tempCpp.cpp" />
-    </ItemGroup>
-
-    <ItemGroup>
       <None Update="b.dylib">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>

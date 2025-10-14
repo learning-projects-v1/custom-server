@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 
 namespace CustomServeer;
 
@@ -15,6 +16,7 @@ public struct ServerConfig
 
 public static class NativeLogic
 {
+    private static int Counter = 0;
     private const string DLL_NAME = "b.dylib";
     [DllImport(DLL_NAME,CallingConvention = CallingConvention.Cdecl)]
     public static extern int CalculateSum(int a, int b);
@@ -33,5 +35,20 @@ public static class NativeLogic
     
     [DllImport(DLL_NAME, CharSet = CharSet.Ansi)]
     public static extern void FreeStringMemory(IntPtr memory);
+
+
+    public static void Increment()
+    {
+        Counter++;
+    }
+
+    public static void Decrement()
+    {
+        Counter--;
+    }
+    public static int GetCounter()
+    {
+        return Counter;
+    }
 
 }
