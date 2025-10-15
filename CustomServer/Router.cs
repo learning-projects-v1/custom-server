@@ -4,7 +4,11 @@ using System.Text.Json;
 
 namespace CustomServeer;
 
-public class Router
+public interface IRouter
+{
+    void MapControllers(Assembly assembly);
+}
+public class Router : IRouter
 {
     private readonly Dictionary<(string method, string path), RequestDelegate> _routes = new(); // method, path 
     public void MapControllers(Assembly assembly)
@@ -20,8 +24,10 @@ public class Router
                 var httpMethodAttribute = method.GetCustomAttributes<HttpMethodAttribute>();
                 foreach (var attribute in httpMethodAttribute)
                 {
+                    
                     _routes.Add((attribute.Method.ToUpper(), attribute.Path.ToLower()) , ( async context =>
                     {
+                        var parameters = attribute.Path.Split('/');
                         var controllerInstance = Activator.CreateInstance(controllerType, Array.Empty<object>());
                         var result = method.Invoke(controllerInstance, Array.Empty<object>());
 
@@ -45,6 +51,7 @@ public class Router
             }
         }
     }
+    
     public RequestDelegate Build()
     {
         return context =>
@@ -64,3 +71,75 @@ public class Router
 }
 
 
+public class RouteItem
+{
+    public string RouteSegment { get; set; } = "";
+    public Dictionary<string, RouteItem> Children { get; set; } = new();
+    public RequestDelegate Handler { get; set; }
+    public RouteItem? ParameterChild { get; set; } // 1 child can exist with parameter i.e api/user/{username}/info
+    public bool IsLeaf { get; set; }
+}
+
+public class TrieBasedRouter : IRouter
+{
+    public RouteItem RootItem { get; set; } = new();
+
+    public void Add(string path, RequestDelegate handler)
+    {
+        var current = RootItem;
+        var segments = path.Trim('/', '/').Split("/");
+        foreach (var segment in segments)
+        {
+            if (segment.StartsWith("{") && segment.EndsWith("}"))
+            {
+                if (current.ParameterChild is not null)
+                {
+                    current =  current.ParameterChild;
+                }
+                else
+                {
+                    current.ParameterChild = new RouteItem{RouteSegment = segment, Handler = handler};
+                    current = current.ParameterChild;
+                }
+            }
+            else
+            {
+                if (current.Children.TryGetValue(segment, out var child))
+                {
+                    current = child;
+                }
+                else
+                {
+                    var routeItem = new RouteItem
+                    {
+                        RouteSegment = segment,
+                        Handler = handler,
+                    };
+                    current.Children.Add(segment, routeItem);
+                    current = routeItem;
+                }
+            }
+        }
+    }
+    
+    
+    public void MapControllers(Assembly assembly)
+    {
+        var controllerTypes = assembly.GetTypes().Where(t => typeof(ControllerBase).IsAssignableFrom(t) && !t.IsAbstract);
+        foreach (var controllerType in controllerTypes)
+        {
+            var methods = controllerType.GetMethods(BindingFlags.Instance | BindingFlags.Public);
+            foreach (var method in methods)
+            {
+                var httpMethodAttributes = method.GetCustomAttributes<HttpMethodAttribute>();
+                foreach (var attribute in httpMethodAttributes)
+                {
+                    Add(attribute.Path.ToLower(), context =>
+                    {
+                        return Task.CompletedTask;
+                    });
+                }
+            }
+        }
+    }   
+}

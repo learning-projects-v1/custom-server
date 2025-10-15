@@ -31,4 +31,10 @@ public class InitialController : ControllerBase
     {
         return Json(new {a = 23, b = 34, c = "Hello world", d = "Ki ase jibone"});
     }
+
+    [HttpGet("api/json/{name}/{age}")]
+    public IActionResult GetJson(string name, int age)
+    {
+        return Json(new {name = name, age = age});
+    }
 }
