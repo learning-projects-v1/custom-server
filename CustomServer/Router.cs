@@ -75,7 +75,7 @@ public class RouteItem
 {
     public string RouteSegment { get; set; } = "";
     public Dictionary<string, RouteItem> Children { get; set; } = new();
-    public RequestDelegate Handler { get; set; }
+    public RequestDelegate? Handler { get; set; }
     public RouteItem? ParameterChild { get; set; } // 1 child can exist with parameter i.e api/user/{username}/info
     public bool IsLeaf { get; set; }
 }
@@ -121,8 +121,36 @@ public class TrieBasedRouter : IRouter
             }
         }
     }
+
+
+    private RequestDelegate? GetRouteRec(string[] segments, int idx, RouteItem current)
+    {
+        if (idx == segments.Length)
+        {
+            if(current.IsLeaf) return current.Handler;
+            return null;
+        }
+
+        RequestDelegate? handler = null;
+        if (current.Children.TryGetValue(segments[idx], out var child)) // first try direct match
+        {
+            handler = GetRouteRec(segments, idx+1, child);
+        }
+
+        if (handler == null && current.ParameterChild != null)    /// match this with parameter {}
+        {
+            handler = GetRouteRec(segments, idx + 1, current.ParameterChild);
+        }
+        return handler;
+    }
     
-    
+    public RequestDelegate? GetRoute(string path)
+    {
+        var segments = path.Trim('/', '/').Split("/");
+        var handler = GetRouteRec(segments, 0, RootItem);
+        return handler;
+
+    }
     public void MapControllers(Assembly assembly)
     {
         var controllerTypes = assembly.GetTypes().Where(t => typeof(ControllerBase).IsAssignableFrom(t) && !t.IsAbstract);
@@ -141,5 +169,24 @@ public class TrieBasedRouter : IRouter
                 }
             }
         }
-    }   
+    }
+
+    public RequestDelegate Build()
+    {
+        return (context) =>
+        {
+            var path = context.Request.Path;
+            var handler = GetRoute(path);
+            if (handler != null)
+            {
+                handler(context);
+            }
+            else
+            {
+                context.Response.StatusCode = 404;
+                context.Response.Body = "Route not found";
+            }
+            return Task.CompletedTask;
+        };
+    }
 }
