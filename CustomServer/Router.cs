@@ -7,6 +7,7 @@ namespace CustomServeer;
 public interface IRouter
 {
     void MapControllers(Assembly assembly);
+    public RequestDelegate Build();
 }
 public class Router : IRouter
 {
@@ -31,19 +32,7 @@ public class Router : IRouter
                         var controllerInstance = Activator.CreateInstance(controllerType, Array.Empty<object>());
                         var result = method.Invoke(controllerInstance, Array.Empty<object>());
 
-                        switch (result)
-                        {
-                            case HttpResponse response:
-                                context.Response =  response;
-                                break;
-                            case IActionResult actionResult:
-                                actionResult.Execute(context);
-                                break;
-                            default:
-                                var json = JsonSerializer.Serialize(result);
-                                context.Response.Body = json;
-                                break;
-                        }
+                        MapResponse(result, context);
 
                         Console.WriteLine($"Mapped {attribute.Method} and {attribute.Path} -> {controllerType.Name}:{method.Name}");
                     }));
@@ -51,7 +40,24 @@ public class Router : IRouter
             }
         }
     }
-    
+
+    private static void MapResponse(object? result, HttpContext context)
+    {
+        switch (result)
+        {
+            case HttpResponse response:
+                context.Response =  response;
+                break;
+            case IActionResult actionResult:
+                actionResult.Execute(context);
+                break;
+            default:
+                var json = JsonSerializer.Serialize(result);
+                context.Response.Body = json;
+                break;
+        }
+    }
+
     public RequestDelegate Build()
     {
         return context =>
@@ -98,7 +104,7 @@ public class TrieBasedRouter : IRouter
                 }
                 else
                 {
-                    current.ParameterChild = new RouteItem{RouteSegment = segment, Handler = handler};
+                    current.ParameterChild = new RouteItem{RouteSegment = segment.Trim('{', '}'), Handler = handler};
                     current = current.ParameterChild;
                 }
             }
@@ -120,6 +126,7 @@ public class TrieBasedRouter : IRouter
                 }
             }
         }
+        current.IsLeaf = true;
     }
 
 
@@ -134,7 +141,7 @@ public class TrieBasedRouter : IRouter
         RequestDelegate? handler = null;
         if (current.Children.TryGetValue(segments[idx], out var child)) // first try direct match
         {
-            handler = GetRouteRec(segments, idx+1, child);
+            handler = GetRouteRec(segments, idx + 1, child);
         }
 
         if (handler == null && current.ParameterChild != null)    /// match this with parameter {}
@@ -146,7 +153,8 @@ public class TrieBasedRouter : IRouter
     
     public RequestDelegate? GetRoute(string path)
     {
-        var segments = path.Trim('/', '/').Split("/");
+        var segments = path.ToLower().Trim('/', '/').Split("/");
+        Console.WriteLine("Getting route for path: " + path);
         var handler = GetRouteRec(segments, 0, RootItem);
         return handler;
 
@@ -164,6 +172,9 @@ public class TrieBasedRouter : IRouter
                 {
                     Add(attribute.Path.ToLower(), context =>
                     {
+                        var controllerInstance = Activator.CreateInstance(controllerType, Array.Empty<object>());
+                        var result = method.Invoke(controllerInstance, Array.Empty<object>());
+                        MapResponse(result, context);
                         return Task.CompletedTask;
                     });
                 }
@@ -188,5 +199,22 @@ public class TrieBasedRouter : IRouter
             }
             return Task.CompletedTask;
         };
+    }
+    
+    private static void MapResponse(object? result, HttpContext context)
+    {
+        switch (result)
+        {
+            case HttpResponse response:
+                context.Response =  response;
+                break;
+            case IActionResult actionResult:
+                actionResult.Execute(context);
+                break;
+            default:
+                var json = JsonSerializer.Serialize(result);
+                context.Response.Body = json;
+                break;
+        }
     }
 }

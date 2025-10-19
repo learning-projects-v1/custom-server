@@ -6,7 +6,8 @@ using CustomServeer;
 Console.WriteLine("Hello, World!");
 var builder = new ApplicationBuilder();
 
-var router = new Router();
+// var router = new Router();
+var router = new TrieBasedRouter();
 router.MapControllers(Assembly.GetExecutingAssembly());
 
 builder.Use(async (context, next) =>
