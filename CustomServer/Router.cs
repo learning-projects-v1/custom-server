@@ -90,10 +90,14 @@ public class TrieBasedRouter : IRouter
 {
     public RouteItem RootItem { get; set; } = new();
 
+    private string[] GetSegments(string path)
+    {
+        return path.Trim('/', '/').Split("/");
+    }
     public void Add(string path, RequestDelegate handler)
     {
         var current = RootItem;
-        var segments = path.Trim('/', '/').Split("/");
+        var segments = GetSegments(path);
         foreach (var segment in segments)
         {
             if (segment.StartsWith("{") && segment.EndsWith("}"))
@@ -153,7 +157,7 @@ public class TrieBasedRouter : IRouter
     
     public RequestDelegate? GetRoute(string path)
     {
-        var segments = path.ToLower().Trim('/', '/').Split("/");
+        var segments = GetSegments(path.ToLower());
         Console.WriteLine("Getting route for path: " + path);
         var handler = GetRouteRec(segments, 0, RootItem);
         return handler;
@@ -167,19 +171,50 @@ public class TrieBasedRouter : IRouter
             var methods = controllerType.GetMethods(BindingFlags.Instance | BindingFlags.Public);
             foreach (var method in methods)
             {
+                var methodParams = method.GetParameters();
                 var httpMethodAttributes = method.GetCustomAttributes<HttpMethodAttribute>();
                 foreach (var attribute in httpMethodAttributes)
                 {
                     Add(attribute.Path.ToLower(), context =>
                     {
+                        var parameters = GetParameters(attribute.Path, context.Request.Path, methodParams);
                         var controllerInstance = Activator.CreateInstance(controllerType, Array.Empty<object>());
-                        var result = method.Invoke(controllerInstance, Array.Empty<object>());
+                        var result = method.Invoke(controllerInstance, parameters.ToArray());
                         MapResponse(result, context);
                         return Task.CompletedTask;
                     });
                 }
             }
         }
+    }
+
+    private object[] GetParameters(string attributePath, string requestPath, ParameterInfo[] methodParams)
+    {
+        var methodSegments = GetSegments(attributePath.ToLower());
+        var requestSegments = GetSegments(requestPath.ToLower());
+        var requestParameters = new Dictionary<string, object>();
+        for(int i = 0; i < methodSegments.Length; i++)
+        {
+            var segment = methodSegments[i];
+            if (segment.StartsWith("{") && segment.EndsWith("}"))
+            {
+                requestParameters.Add(segment.Trim('{', '}'), requestSegments[i]);
+            }
+        }
+
+        Console.WriteLine("Request Parameters: " + string.Join(", ", requestParameters));
+        var result = new object[methodSegments.Length];
+        var index = 0;
+        foreach(var methodParam in methodParams)
+        {
+            if (requestParameters.TryGetValue(methodParam.Name, out var requestParameter))
+            {
+                var parameter = Convert.ChangeType(requestParameter, methodParam.ParameterType);
+                result[index++] = parameter;
+            }
+        }
+        
+        return result;
     }
 
     public RequestDelegate Build()
