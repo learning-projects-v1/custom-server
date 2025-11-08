@@ -8,13 +8,4 @@
         <RootNamespace>CustomServeer</RootNamespace>
     </PropertyGroup>
 
-    <ItemGroup>
-      <None Update="b.dylib">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="a.dylib">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
-
 </Project>
