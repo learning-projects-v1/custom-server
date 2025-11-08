@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/purple_ghost/RiderProjects/CustomServeer/CustomServer/CustomServer.csproj",
+      "projectUniqueName": "/Users/purple_ghost/Documents/my-projects/customServer-2/custom-server/CustomServer/CustomServer.csproj",
       "projectName": "CustomServer",
-      "projectPath": "/Users/purple_ghost/RiderProjects/CustomServeer/CustomServer/CustomServer.csproj",
+      "projectPath": "/Users/purple_ghost/Documents/my-projects/customServer-2/custom-server/CustomServer/CustomServer.csproj",
       "packagesPath": "/Users/purple_ghost/.nuget/packages/",
-      "outputPath": "/Users/purple_ghost/RiderProjects/CustomServeer/CustomServer/obj/",
+      "outputPath": "/Users/purple_ghost/Documents/my-projects/customServer-2/custom-server/CustomServer/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/purple_ghost/.nuget/NuGet/NuGet.Config"

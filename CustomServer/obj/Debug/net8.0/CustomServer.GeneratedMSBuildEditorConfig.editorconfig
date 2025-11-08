@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = CustomServeer
-build_property.ProjectDir = /Users/purple_ghost/RiderProjects/CustomServeer/CustomServer/
+build_property.ProjectDir = /Users/purple_ghost/Documents/my-projects/customServer-2/custom-server/CustomServer/
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
