@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomServer", "CustomServer\CustomServer.csproj", "{923075D0-D681-4CD8-9645-87FA482BC36F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomServer", "CustomServer\CustomServer.csproj", "{4E18A515-0672-46D2-97BD-D1ACDB41BE2D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{BA259361-B299-4DC2-8F78-D0854D181C5B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -8,9 +10,13 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{923075D0-D681-4CD8-9645-87FA482BC36F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{923075D0-D681-4CD8-9645-87FA482BC36F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{923075D0-D681-4CD8-9645-87FA482BC36F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{923075D0-D681-4CD8-9645-87FA482BC36F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E18A515-0672-46D2-97BD-D1ACDB41BE2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E18A515-0672-46D2-97BD-D1ACDB41BE2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E18A515-0672-46D2-97BD-D1ACDB41BE2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E18A515-0672-46D2-97BD-D1ACDB41BE2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA259361-B299-4DC2-8F78-D0854D181C5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA259361-B299-4DC2-8F78-D0854D181C5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA259361-B299-4DC2-8F78-D0854D181C5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA259361-B299-4DC2-8F78-D0854D181C5B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
