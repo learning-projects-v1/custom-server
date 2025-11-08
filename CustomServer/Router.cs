@@ -203,7 +203,7 @@ public class TrieBasedRouter : IRouter
         }
 
         Console.WriteLine("Request Parameters: " + string.Join(", ", requestParameters));
-        var result = new object[methodSegments.Length];
+        var result = new object[methodParams.Length];
         var index = 0;
         foreach(var methodParam in methodParams)
         {
