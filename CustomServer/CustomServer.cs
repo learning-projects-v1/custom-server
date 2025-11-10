@@ -41,21 +41,22 @@ public class CustomServer
             var totalBytesRead = 0;
             while (true)
             {
-                var bytesRead = await stream.ReadAsync(buffer); 
+                var bytesRead = await stream.ReadAsync(buffer);     
                 var request = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                 requestString.Append(request);
-                if (request.IndexOf("\r\n\r\n") != -1)      /// todo: handle later bytes if chunked or comes in next packet
+                if (request.IndexOf("\r\n\r\n") != -1)      /// todo: handle when stream is chunked or comes in multiple packets
                 {
                     break;
                 }
             }
-            
-            string httpResponse = 
+
+            var httpContext = new HttpContext(requestString.ToString());
+            string httpResponse =
                 "HTTP/1.1 200 OK\r\n" +
                 "Content-Type: text/plain\r\n" +
-                "Content-Length: 12\r\n" +
+                "Content-Length: "+ 50 + "\r\n" +
                 "\r\n" +
-                "Hello World from custom server!";
+                "<h1>Ki ase jibone<h1></br><p>Kisu nai:(</p>\r\n";
 
             var responseBytes = Encoding.UTF8.GetBytes(httpResponse);
             await stream.WriteAsync(responseBytes);
