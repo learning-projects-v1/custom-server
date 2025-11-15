@@ -1,4 +1,6 @@
-namespace CustomServer;
+using System.Text;
+
+namespace CustomHttp;
 
 public class HttpContext
 {
@@ -18,7 +20,7 @@ public class HttpRequest
     public string Path { get; set; }
     public string[] PathSegments { get; set; }
     public Dictionary<string, string> QueryParams { get; set; }
-    public Dictionary<string, string> Headers { get; set; }
+    public Dictionary<string, string> Headers { get; set; } = new();
     public string Body { get; set; }
 
     public HttpRequest(string requestString)
@@ -52,7 +54,46 @@ public class HttpRequest
 
 public class HttpResponse
 {
-    public string StatusCode { get; set; }
-    public Dictionary<string, string> Headers { get; set; }
+    public int StatusCode { get; set; }
+    public Dictionary<string, string> Headers { get; set; } = new();
     public string Body { get; set; }
+    public string Version { get; set; } = "HTTP/1.0";
+    
+    public string GetResponse()
+    {
+        var response = new StringBuilder();
+        response.Append($"{Version} {StatusCode} {GetStatusText(StatusCode)}\r\n");
+        if (!Headers.ContainsKey("Date"))
+            Headers["Date"] = DateTime.UtcNow.ToString("R");
+
+        if (!Headers.ContainsKey("Server"))
+            Headers["Server"] = "CustomServer/1.0";
+        
+        foreach (var responseHeader in Headers)
+        {
+            response
+                .Append(responseHeader.Key + ": " + responseHeader.Value)
+                .Append("\r\n");
+        }
+
+        response.Append("\r\n");
+        response.Append(Body);
+        return response.ToString();
+    }
+    
+    private string GetStatusText(int code) => code switch
+    {
+        200 => "OK",
+        201 => "Created",
+        204 => "No Content",
+        301 => "Moved Permanently",
+        302 => "Found",
+        400 => "Bad Request",
+        401 => "Unauthorized",
+        403 => "Forbidden",
+        404 => "Not Found",
+        500 => "Internal Server Error",
+        _ => "Unknown"
+    };
 }
+

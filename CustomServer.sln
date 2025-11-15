@@ -4,6 +4,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomServer", "CustomServe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{BA259361-B299-4DC2-8F78-D0854D181C5B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomMvc", "CustomMvc\CustomMvc.csproj", "{6685257E-B2C4-47B7-8C81-C8EA045AB7EA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomHttp", "CustomHttp\CustomHttp.csproj", "{404AFAE0-B653-4A2E-8DB5-7CEEEAD62E01}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,13 @@ Global
 		{BA259361-B299-4DC2-8F78-D0854D181C5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA259361-B299-4DC2-8F78-D0854D181C5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA259361-B299-4DC2-8F78-D0854D181C5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6685257E-B2C4-47B7-8C81-C8EA045AB7EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6685257E-B2C4-47B7-8C81-C8EA045AB7EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6685257E-B2C4-47B7-8C81-C8EA045AB7EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6685257E-B2C4-47B7-8C81-C8EA045AB7EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{404AFAE0-B653-4A2E-8DB5-7CEEEAD62E01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{404AFAE0-B653-4A2E-8DB5-7CEEEAD62E01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{404AFAE0-B653-4A2E-8DB5-7CEEEAD62E01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{404AFAE0-B653-4A2E-8DB5-7CEEEAD62E01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
