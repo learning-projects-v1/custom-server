@@ -13,7 +13,7 @@ public class ApplicationBuilder : IApplicationBuilder
     private List<Func<RequestDelegate, RequestDelegate>> _container = new();
     public void Use(Func<HttpContext, RequestDelegate, Task> middleware)
     {
-        _container.Add(next => (context => middleware(context, next)));
+         _container.Add(next => (context => middleware(context, next)));
     }
     
     public RequestDelegate Build()

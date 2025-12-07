@@ -34,20 +34,22 @@ public class HttpRequest
 
         var headers = lineParts.Skip(1).TakeWhile(x => x != "").ToList();
         Headers = headers.ToDictionary(h => h.Split(':', StringSplitOptions.TrimEntries).First(), h => h.Split(':', StringSplitOptions.RemoveEmptyEntries).Last());
-        PathSegments = ParsePathSegments(Path);
-        QueryParams = ParseQueryParams(Path);
+        var pathSplit = Path.Split("?", StringSplitOptions.RemoveEmptyEntries);
+        PathSegments = ParsePathSegments(pathSplit[0]);
+        if (pathSplit.Length > 1)
+        {
+            QueryParams = ParseQueryParams(pathSplit[1]);
+        }
     }
 
     private string[] ParsePathSegments(string path)
     {
-        return path.Split("?", StringSplitOptions.RemoveEmptyEntries)[0].Split('/', StringSplitOptions.RemoveEmptyEntries);
+        return path.Split('/', StringSplitOptions.RemoveEmptyEntries);
     }
 
     private Dictionary<string, string> ParseQueryParams(string path)
     {
-        var pathSplit = path.Split("?", StringSplitOptions.RemoveEmptyEntries);
-        if (pathSplit.Length < 2) return new();
-        var queryString = pathSplit[1].Split('&',  StringSplitOptions.RemoveEmptyEntries);
+        var queryString = path.Split('&',  StringSplitOptions.RemoveEmptyEntries);
         return queryString.ToDictionary(q => q.Split('=').First(), q => q.Split('=').Last());
     }
 }
