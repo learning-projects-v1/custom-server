@@ -25,6 +25,7 @@
 project.lock.json
 project.fragment.lock.json
 artifacts/
+obj/
 
 # Tye
 .tye/
@@ -45,6 +46,7 @@ ScaffoldingReadMe.txt
 .AppleDouble
 .LSOverride
 
+
 # Environment files
 .env
 .env.*
@@ -56,3 +58,5 @@ out/
 
 # Others
 node_modules/
+**/bin/
+**/obj/

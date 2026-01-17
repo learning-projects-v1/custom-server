@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\CustomMvc\CustomMvc.csproj" />
       <ProjectReference Include="..\CustomServer\CustomServer.csproj" />
     </ItemGroup>
 

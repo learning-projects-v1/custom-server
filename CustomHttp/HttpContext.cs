@@ -57,6 +57,7 @@ public class HttpRequest
 public class HttpResponse
 {
     public int StatusCode { get; set; }
+    public string StatusText { get; set; }
     public Dictionary<string, string> Headers { get; set; } = new();
     public string Body { get; set; }
     public string Version { get; set; } = "HTTP/1.0";
@@ -81,6 +82,12 @@ public class HttpResponse
         response.Append("\r\n");
         response.Append(Body);
         return response.ToString();
+    }
+    
+    
+    public void SetHeader(string key, string value)
+    {
+        Headers[key] = value;
     }
     
     private string GetStatusText(int code) => code switch

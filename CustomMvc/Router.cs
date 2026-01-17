@@ -14,7 +14,7 @@ public class RouteItem
 
 public interface IRouter
 {
-    void Build();
+    RequestDelegate UseRouting();
     void MapControllers(Assembly assembly);
 }
 
@@ -43,7 +43,7 @@ public class TrieRouter : IRouter
         cur.IsLeaf = true;
     }
 
-    private RouteItem? GetRoute(string[] pathSegment)
+    private RequestDelegate? GetRoute(string[] pathSegment)
     {
         var cur = root;
         foreach (var path in pathSegment)
@@ -59,7 +59,7 @@ public class TrieRouter : IRouter
             else return null;
         }
 
-        if (cur.IsLeaf) return cur;
+        if (cur.IsLeaf) return cur.Handler;
         return null;
     }
     
@@ -74,13 +74,14 @@ public class TrieRouter : IRouter
                foreach (var attribute in attributes)
                {
                    var path = attribute._path.ToLower();
-                   var pathSegments = path.Split('/');
+                   var pathSegments = GetPathSegment(path);
                    RequestDelegate handler = (HttpContext httpContext) =>
                    {
                        var parameters = method.GetParameters();
                        var allParameters = GetParameters(pathSegments, httpContext.Request.PathSegments, httpContext.Request.QueryParams, parameters);
                        var controllerInstance = Activator.CreateInstance(type);
-                       method.Invoke(controllerInstance, allParameters);
+                       var result = method.Invoke(controllerInstance, allParameters);
+                       ActionResultExecutor.Execute(result, httpContext);
                        return Task.CompletedTask;
                    };
                    AddRoute(pathSegments, handler);
@@ -88,8 +89,12 @@ public class TrieRouter : IRouter
             }
         }
     }
-    
-    
+
+    private string[] GetPathSegment(string path)
+    {
+        return path.Split('/');
+    }
+
 
     private object[] GetParameters(string[] controllerPathSegments, string[] requestPathSegments, Dictionary<string, string> requestQueryParams, ParameterInfo[] parameters)
     {
@@ -128,8 +133,23 @@ public class TrieRouter : IRouter
         return routeParams;
     }
 
-    public void Build()
-    {
-        
+    public RequestDelegate UseRouting()
+    {   
+        return (context) =>
+        {
+            var path = context.Request.Path;
+            var handler = GetRoute(GetPathSegment(path));
+            if (handler != null)
+            {
+                handler(context);
+            }
+            else
+            {
+                context.Response.StatusCode = 404;
+                context.Response.Body = "Route not found";
+            }
+            return Task.CompletedTask;
+        };
     }
+    
 }
