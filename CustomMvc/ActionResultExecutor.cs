@@ -27,13 +27,6 @@ public static class ActionResultExecutor
                 var json = JsonSerializer.Serialize(result);
                 context.Response.Body = json;
                 break;
-            //
-            // default:
-            //     context.Response.StatusCode = 200;
-            //     context.Response.Headers["Content-Type"] = "application/json";
-            //     await context.Response.WriteAsync(
-            //         JsonSerializer.Serialize(result));
-            //     break;
         }
     }
 }

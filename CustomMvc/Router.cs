@@ -30,14 +30,16 @@ public class TrieRouter : IRouter
             {
                 if(cur.ParameterChild == null) cur.ParameterChild = new RouteItem();
                 cur = cur.ParameterChild;
-                return;
             }
-            var routeItem = new RouteItem();
-            if (!cur.Children.ContainsKey(path))
-            { 
-                cur.Children.Add(path, routeItem);
+            else
+            {
+                if (!cur.Children.ContainsKey(path))
+                { 
+                    var routeItem = new RouteItem();
+                    cur.Children.Add(path, routeItem);
+                }
+                cur = cur.Children[path];
             }
-            cur = cur.Children[path];
         }
         cur.Handler = handler;
         cur.IsLeaf = true;
@@ -92,7 +94,7 @@ public class TrieRouter : IRouter
 
     private string[] GetPathSegment(string path)
     {
-        return path.Split('/');
+        return path.Split('/', StringSplitOptions.RemoveEmptyEntries);
     }
 
 
