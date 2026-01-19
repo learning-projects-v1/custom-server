@@ -75,12 +75,12 @@ public class TrieRouter : IRouter
                var attributes = method.GetCustomAttributes<AHttpAttribute>();
                foreach (var attribute in attributes)
                {
-                   var path = attribute._path.ToLower();
-                   var pathSegments = GetPathSegment(path);
+                   var path = attribute.Path.ToLower();
+                   var pathSegments = GetPathSegment(path, attribute.Method);
                    RequestDelegate handler = (HttpContext httpContext) =>
                    {
                        var parameters = method.GetParameters();
-                       var allParameters = GetParameters(pathSegments, httpContext.Request.PathSegments, httpContext.Request.QueryParams, parameters);
+                       var allParameters = GetParameters(pathSegments[1..], httpContext.Request.PathSegments, httpContext.Request.QueryParams, parameters);
                        var controllerInstance = Activator.CreateInstance(type);
                        var result = method.Invoke(controllerInstance, allParameters);
                        ActionResultExecutor.Execute(result, httpContext);
@@ -92,9 +92,10 @@ public class TrieRouter : IRouter
         }
     }
 
-    private string[] GetPathSegment(string path)
+    private string[] GetPathSegment(string path, string method)
     {
-        return path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        var segments = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        return [method, ..segments];
     }
 
 
@@ -140,7 +141,7 @@ public class TrieRouter : IRouter
         return (context) =>
         {
             var path = context.Request.Path;
-            var handler = GetRoute(GetPathSegment(path));
+            var handler = GetRoute(GetPathSegment(path, context.Request.Method));
             if (handler != null)
             {
                 handler(context);
