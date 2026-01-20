@@ -21,8 +21,8 @@ public class HttpRequest
     public string[] PathSegments { get; set; }
     public Dictionary<string, string> QueryParams { get; set; } = new();
     public Dictionary<string, string> Headers { get; set; } = new();
-    public string Body { get; set; }
-
+    // public string Body { get; set; }
+    public byte[] Body { get; set; }
     public HttpRequest(string requestString)
     {
         var lineParts = requestString.Split("\r\n");
