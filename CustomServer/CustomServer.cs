@@ -61,7 +61,7 @@ public class CustomServer
                         }
                     }
                 }
-            
+                
                 var allBytes = headerBuffer.ToArray();
                 var headerEndIndex = FindHeaderEnd(allBytes); // index after \r\n\r\n
 
@@ -98,7 +98,7 @@ public class CustomServer
 
                     httpContext.Request.Body = body;
                 }
-                var bodyString = Encoding.UTF8.GetString(httpContext.Request.Body);
+           
                 // step 3: handle pipeline
                 await _pipeline(httpContext);
                 
@@ -108,10 +108,6 @@ public class CustomServer
                 await stream.WriteAsync(responseBytes);
                 
             }
-            // catch (HttpParseException ex)
-            // {
-            //     await HttpErrorWriter.WriteBadRequestAsync(stream, ex.Message);
-            // }
             catch (Exception ex)
             {
                 await HttpErrorWriter.WriteBadRequestAsync(stream, ex.Message);
