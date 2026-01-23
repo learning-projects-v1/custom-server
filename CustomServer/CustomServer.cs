@@ -112,9 +112,9 @@ public class CustomServer
             // {
             //     await HttpErrorWriter.WriteBadRequestAsync(stream, ex.Message);
             // }
-            catch (Exception)
+            catch (Exception ex)
             {
-                await HttpErrorWriter.WriteBadRequestAsync(stream);
+                await HttpErrorWriter.WriteBadRequestAsync(stream, ex.Message);
             }
             finally
             {

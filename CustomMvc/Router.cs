@@ -1,5 +1,7 @@
 using System.ComponentModel;
 using System.Reflection;
+using System.Text;
+using System.Text.Json;
 using CustomHttp;
 
 namespace CustomMvc;
@@ -80,7 +82,7 @@ public class TrieRouter : IRouter
                    RequestDelegate handler = (HttpContext httpContext) =>
                    {
                        var parameters = method.GetParameters();
-                       var allParameters = GetParameters(pathSegments[1..], httpContext.Request.PathSegments, httpContext.Request.QueryParams, parameters);
+                       var allParameters = GetParameters(pathSegments[1..], httpContext, parameters);
                        var controllerInstance = Activator.CreateInstance(type);
                        var result = method.Invoke(controllerInstance, allParameters);
                        ActionResultExecutor.Execute(result, httpContext);
@@ -99,13 +101,18 @@ public class TrieRouter : IRouter
     }
 
 
-    private object[] GetParameters(string[] controllerPathSegments, string[] requestPathSegments, Dictionary<string, string> requestQueryParams, ParameterInfo[] parameters)
+    private object[] GetParameters(string[] controllerPathSegments, HttpContext httpContext, ParameterInfo[] parameters)
     {
+        var requestPathSegments = httpContext.Request.PathSegments;
+        var requestQueryParams = httpContext.Request.QueryParams;
         var routeParams = ParseRouteParameters(controllerPathSegments, requestPathSegments);
+        
+        
         foreach (var keyValuePair in routeParams)
         {
             requestQueryParams.Add(keyValuePair.Key, keyValuePair.Value);
         }
+        
         var result = new object[parameters.Length];
         for (int i = 0; i < parameters.Length; i++)
         {
@@ -115,10 +122,40 @@ public class TrieRouter : IRouter
             {
                 result[i] = Convert.ChangeType(value, type);
             }
+            else
+            {
+                if (IsComplexType(type))
+                {
+                    result[i] = BindFromBody(type, httpContext);
+                }
+            }
         }
         return result;
     }
 
+    private object? BindFromBody(Type type, HttpContext context)
+    {
+        if (context?.Request.Body == null) return null;
+        if (!context.Request.Headers.TryGetValue("Content-Type", out var contentType))
+        { 
+            throw new Exception("Unsupported Content-Type");
+        }
+
+        if (!contentType.StartsWith("application/json", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new Exception("Unsupported Content-Type");
+            
+        }
+        var json = Encoding.UTF8.GetString(context.Request.Body);
+        var model = JsonSerializer.Deserialize(json, type);
+        return model;
+    }
+
+    private bool IsComplexType(Type type)
+    {
+        return type.IsClass && type != typeof(string);
+    }
+    
     private Dictionary<string, string> ParseRouteParameters(string[] controllerPathSegments, string[] requestPathSegments)
     {
         var routeParams = new Dictionary<string, string>();

@@ -21,9 +21,23 @@ public class MyController : AControllerBase
         return Text("HELLO WORLD FROM ABCD." + " id = " + id);
     }
 
-    [HttpGet("/a/b/{msg}/c/d")]
-    public IActionResult GetABCDMsg(string msg)
+    [HttpPost("/a/b")]
+    public IActionResult PostAb(UserDto model)
     {
-        return Text("HELLO WORLD FROM ABCD." + msg);
+        Console.WriteLine($"Got model: {model.Name}, {model.Email}, {model.Age}");
+        return Json(model);
     }
+
+    [HttpDelete("/a/{id}/b")]
+    public IActionResult DeleteAb(string id)
+    {
+        return Text($"Delete request with Id: {id}");
+    }
+
+    [HttpPut("/a/b")]
+    public IActionResult PutAb(UserDto model)
+    {
+        return Text($"Put request with model: {model.Name}, {model.Email}, {model.Age}");
+    }
+    
 }

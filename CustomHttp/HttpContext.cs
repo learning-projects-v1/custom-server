@@ -33,7 +33,7 @@ public class HttpRequest
         Path = httpRequestLine[1];
 
         var headers = lineParts.Skip(1).TakeWhile(x => x != "").ToList();
-        Headers = headers.ToDictionary(h => h.Split(':', StringSplitOptions.TrimEntries).First(), h => h.Split(':', StringSplitOptions.RemoveEmptyEntries).Last());
+        Headers = headers.ToDictionary(h => h.Split(':', StringSplitOptions.TrimEntries).First(), h => h.Split(':', StringSplitOptions.TrimEntries).Last());
         var pathSplit = Path.Split("?", StringSplitOptions.RemoveEmptyEntries);
         PathSegments = ParsePathSegments(pathSplit[0]);
         if (pathSplit.Length > 1)

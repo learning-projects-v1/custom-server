@@ -37,3 +37,19 @@ public class HttpPostAttribute : AHttpAttribute
 
     }
 }
+
+public class HttpPutAttribute : AHttpAttribute
+{
+    public HttpPutAttribute(string path):  base("PUT", path)
+    {
+        
+    }
+}
+
+public class HttpDeleteAttribute : AHttpAttribute
+{
+    public HttpDeleteAttribute(string path):  base("DELETE", path)
+    {
+        
+    }
+}
