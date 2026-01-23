@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomServerMvc", "CustomSe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomServerHttp", "CustomServerHttp\CustomServerHttp.csproj", "{404AFAE0-B653-4A2E-8DB5-7CEEEAD62E01}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test2", "Test2\Test2.csproj", "{AC5F9C5D-A9C9-4707-A6E2-CAC93DF8A0CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{404AFAE0-B653-4A2E-8DB5-7CEEEAD62E01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{404AFAE0-B653-4A2E-8DB5-7CEEEAD62E01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{404AFAE0-B653-4A2E-8DB5-7CEEEAD62E01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC5F9C5D-A9C9-4707-A6E2-CAC93DF8A0CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC5F9C5D-A9C9-4707-A6E2-CAC93DF8A0CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC5F9C5D-A9C9-4707-A6E2-CAC93DF8A0CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC5F9C5D-A9C9-4707-A6E2-CAC93DF8A0CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
