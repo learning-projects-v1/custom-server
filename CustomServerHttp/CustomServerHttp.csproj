@@ -6,6 +6,21 @@
         <Nullable>enable</Nullable>
         <AssemblyName>CustomServerHttp</AssemblyName>
         <RootNamespace>CustomServerHttp</RootNamespace>
+        
+        <!--Nuget metadata-->
+        <PackageId>CustomServerHttp</PackageId>
+        <Version>0.1.0</Version>
+        <Authors>Jakir Hossen</Authors>
+        <Company></Company>
+        <Description>
+            A lightweight educational HTTP server and middleware pipeline inspired by ASP.NET Core.
+        </Description>
+        <PackageTags>http server middleware educational</PackageTags>
+        <RepositoryUrl>https://github.com/learning-projects-v1/custom-server</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        
     </PropertyGroup>
 
 </Project>

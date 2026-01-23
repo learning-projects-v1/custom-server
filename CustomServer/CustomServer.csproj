@@ -8,7 +8,7 @@
 
         <!-- NuGet metadata -->
         <PackageId>CustomServer</PackageId>
-        <Version>0.1.0</Version>
+        <Version>0.1.1</Version>
         <Authors>Jakir Hossen</Authors>
         <Company></Company>
         <Description>
@@ -19,13 +19,11 @@
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-   
-   
-   
+        
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CustomServerHttp\CustomServerHttp.csproj" />
+      <PackageReference Include="CustomServerHttp" Version="0.1.0" />
     </ItemGroup>
 
 </Project>
