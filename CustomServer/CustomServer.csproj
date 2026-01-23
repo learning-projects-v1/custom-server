@@ -8,8 +8,8 @@
 
         <!-- NuGet metadata -->
         <PackageId>CustomServer</PackageId>
-        <Version>0.1.1</Version>
-        <Authors>Jakir Hossen</Authors>
+        <Version>0.1.3</Version>
+        <Authors>Jakir Hosslsen</Authors>
         <Company></Company>
         <Description>
             A lightweight educational HTTP server and middleware pipeline inspired by ASP.NET Core.

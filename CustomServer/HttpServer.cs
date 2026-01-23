@@ -5,13 +5,13 @@ using CustomHttp;
 using CustomServerHttp;
 
 namespace CustomServer;
-public class CustomServer
+public class HttpServer
 {
     private readonly TcpListener _listener;
     private readonly int _port;
     private readonly IPAddress _ipAddress = IPAddress.Any;
     private readonly RequestDelegate _pipeline;
-    public CustomServer(RequestDelegate pipeline, int port = 8000)
+    public HttpServer(RequestDelegate pipeline, int port = 8000)
     {
         // step 1: start the server
         // step 1.1: open OS socket to listen for incoming requests on a ipEndpoint

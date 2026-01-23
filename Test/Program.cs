@@ -20,7 +20,6 @@ builder.Use(async (context, next) =>
     await next(context);
 });
 
-
 var router = new TrieRouter();
 router.MapControllers(Assembly.GetExecutingAssembly());
 builder.Use(async (context, next) =>
@@ -30,6 +29,6 @@ builder.Use(async (context, next) =>
 });
 
 var pipeline = builder.Build();
-var server = new CustomServer.CustomServer(pipeline);
+var server = new HttpServer(pipeline);
 
 server.Start();

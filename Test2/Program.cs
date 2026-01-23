@@ -1,27 +1,13 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using System.Reflection;
-using CustomHttp;
-using CustomServer;
 using CustomServerHttp;
 using CustomServerMvc;
-
+using CustomServer;
 
 var builder = new ApplicationBuilder();
-// builder.Use(async (context, next) =>
-// {
-//     Console.WriteLine("First middleware");
-//     await next(context);
-// });
-//
-// builder.Use(async (context, next) =>
-// {
-//     Console.WriteLine("Second middleware");
-//     await next(context);
-// });
-
-
 var router = new TrieRouter();
+
 router.MapControllers(Assembly.GetExecutingAssembly());
 builder.Use(async (context, next) =>
 {
@@ -30,6 +16,6 @@ builder.Use(async (context, next) =>
 });
 
 var pipeline = builder.Build();
-var server = new CustomServer.CustomServer(pipeline);
+var server = new HttpServer(pipeline);
 
 server.Start();

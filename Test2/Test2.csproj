@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="CustomServer" Version="0.1.1" />
+      <PackageReference Include="CustomServer" Version="0.1.2" />
       <PackageReference Include="CustomServerMvc" Version="0.1.0" />
     </ItemGroup>
 
