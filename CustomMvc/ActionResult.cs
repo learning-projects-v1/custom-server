@@ -1,13 +1,18 @@
 using System.Text;
 using System.Text.Json;
+using CustomHttp;
 
-namespace CustomServeer;
+namespace CustomMvc;
+
+public interface IActionResult
+{
+    public void Execute(HttpContext context);   
+}
 
 public class JsonActionResult : IActionResult
 {
     private readonly object _data;
     private readonly int _statusCode;
-    
     public JsonActionResult(object data, int statusCode)
     {
         _data = data;

@@ -1,113 +1,142 @@
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using CustomHttp;
+using CustomMvc;
 
-namespace CustomServeer;
+namespace CustomServer;
 public class CustomServer
 {
-    private readonly RequestDelegate _pipeline;
-    private static IPAddress _ipAddress = IPAddress.Any;
     private readonly TcpListener _listener;
     private readonly int _port;
+    private readonly IPAddress _ipAddress = IPAddress.Any;
+    private readonly RequestDelegate _pipeline;
     public CustomServer(RequestDelegate pipeline, int port = 8000)
     {
+        // step 1: start the server
+        // step 1.1: open OS socket to listen for incoming requests on a ipEndpoint
         _port = port;
+        _listener = new TcpListener(_ipAddress, _port);
         _pipeline = pipeline;
-        _listener = new TcpListener(_ipAddress, port);
     }
     
-    public async Task StartServer()
+    public void Start()
     {
         _listener.Start();
-        Console.WriteLine($"Server started on {_ipAddress}:{_port}");
-
+        Console.WriteLine($"Listening on {_ipAddress}:{_port}");
+        
+        // step 1.2: accept each request and send them for handling asyncrhounously
         while (true)
         {
-            var client = await _listener.AcceptTcpClientAsync();
-            var ipEndPoint = client.Client.RemoteEndPoint as IPEndPoint;
-            Console.WriteLine($"Client connected on {ipEndPoint.Address.ToString()}:{ipEndPoint.Port}");
-            var _ = Task.Run(()=> HandleClientAsync(client)) ;
+            var client = _listener.AcceptTcpClient();
+            var _ = Task.Run(()=> HandleRequest(client));
         }
     }
 
-    private async Task HandleClientAsync(TcpClient client)
+    private async Task HandleRequest(TcpClient client)
     {
+        // step 2: parse request to create HttpContext
         using (client)
         {
+            // step 2.1: read header
             await using var stream = client.GetStream();
-            var buffer = new Byte[4096];
-            var totalBytesRead = 0;
-            Memory<byte> memory = buffer;
-            StringBuilder requestString = new StringBuilder();
-            while (totalBytesRead < buffer.Length)
+            try
             {
-                var byteCount = await stream.ReadAsync(memory.Slice(totalBytesRead));
-                var currentString = Encoding.UTF8.GetString(memory.Span.Slice(totalBytesRead, byteCount));
-                requestString.Append(currentString);
-                totalBytesRead += byteCount;
-                
-                if (currentString.IndexOf("\r\n") != -1 || currentString.Length == 0) break;
-            }
-            Console.WriteLine($"Total received {totalBytesRead} bytes from client");
-        
-            // var requestString = Encoding.ASCII.GetString(memory.Span);
-            var httpContext = ParseHttpContext(client, requestString.ToString());
-            await _pipeline(httpContext);
+                var buffer = new byte[4096];
+                var headerBuffer = new MemoryStream();
+                while (true)
+                {
+                    var bytesRead = await stream.ReadAsync(buffer);
+                    if (bytesRead == 0)
+                        throw new Exception("Client disconnected");
+                    headerBuffer.Write(buffer, 0, bytesRead);
+                    
+                    if (headerBuffer.Length >= 4)
+                    {
+                        var data = headerBuffer.ToArray();
+                        var headerEnd = FindHeaderEnd(data);
+                        if (headerEnd != -1)
+                        {
+                            break;
+                        }
+                    }
+                }
             
-            var responseMessage = httpContext.GetResponse();
-            //var responseMessage = $"HTTP/1.1 {httpContext.Response.StatusCode} OK\r\nContent-Type: text/plain\r\n\r\n{httpContext.Response.Body} \r\n";
-            await stream.WriteAsync(Encoding.ASCII.GetBytes(responseMessage));
-            //
-            // int sum = NativeLogic.CalculateSum(10, 12);
-            // Console.WriteLine($"Sum: {sum}");
-        }
-        
-    }
+                var allBytes = headerBuffer.ToArray();
+                var headerEndIndex = FindHeaderEnd(allBytes); // index after \r\n\r\n
 
-    private static HttpContext ParseHttpContext(TcpClient client, string request)
-    {
-        var httpContext = new HttpContext(client);
-        var lineParts = request.Split("\r\n");
-        if (lineParts.Length < 2)
-        {
-            throw new Exception("Invalid HTTP request");        // refactor after fixing proper response pattern
-        }
-        var HttpMethodLine = lineParts[0].Split(" ");
-        var method = HttpMethodLine[0];
-        var path = HttpMethodLine[1];
-        var version = HttpMethodLine[2];
-        
-        httpContext.Request = new HttpRequest
-        {
-            Method = method,
-            Path = path,
-            Version = version,
-        };
-        
-        int bodyStart = -1;
-        var requestHeaders = httpContext.Request.Headers;
-        for (int i = 1; i < lineParts.Length; i++)
-        {
-            if (lineParts[i] == "\r\n" || lineParts[i] == "\n")
-            {
-                bodyStart = i + 1;
-                break;
-            }
+                var headerBytes = allBytes[..headerEndIndex];
+                var remainingBytes = allBytes[headerEndIndex..];
 
-            var header = lineParts[i].Split(":");
-            if (header.Length < 2)
-            {
-                bodyStart = i + 1;
-                break;
+                var requestString = Encoding.UTF8.GetString(headerBytes);
+              
+                // step 2.2: parse httpContext from request string
+                var httpContext = new HttpContext(requestString.ToString());
+                
+            
+                // step 2.3: body
+                if (httpContext.Request.Headers.TryGetValue("Content-Length", out var lenStr))
+                {
+                    var contentLength = int.Parse(lenStr);
+                    var body = new byte[contentLength];
+
+                    var alreadyRead = Math.Min(remainingBytes.Length, contentLength);
+                    Array.Copy(remainingBytes, body, alreadyRead);
+
+                    var remaining = contentLength - alreadyRead;
+                    var offset = alreadyRead;
+
+                    while (remaining > 0)
+                    {
+                        var read = await stream.ReadAsync(body, offset, remaining);
+                        if (read == 0)
+                            throw new Exception("Client disconnected");
+
+                        offset += read;
+                        remaining -= read;
+                    }
+
+                    httpContext.Request.Body = body;
+                }
+                var bodyString = Encoding.UTF8.GetString(httpContext.Request.Body);
+                // step 3: handle pipeline
+                await _pipeline(httpContext);
+                
+                // step 4: map response
+                var response = httpContext.Response.GetResponse();
+                var responseBytes = Encoding.UTF8.GetBytes(response);
+                await stream.WriteAsync(responseBytes);
+                
             }
-            requestHeaders.Add(header[0].Trim(), header[1].Trim());
+            // catch (HttpParseException ex)
+            // {
+            //     await HttpErrorWriter.WriteBadRequestAsync(stream, ex.Message);
+            // }
+            catch (Exception ex)
+            {
+                await HttpErrorWriter.WriteBadRequestAsync(stream, ex.Message);
+            }
+            finally
+            {
+                stream.Close();
+                client.Close();
+            }
         }
+   
         
-        httpContext.Request.RequestBody = lineParts.Length > bodyStart ? lineParts[bodyStart].Trim(): "";
         
-        Console.WriteLine($"Parsed Request: Method='{method}', Path='{path}'");
-        
-        return httpContext;
     }
     
+    static int FindHeaderEnd(byte[] data)
+    {
+        for (int i = 0; i <= data.Length - 4; i++)
+        {
+            if (data[i] == 13 && data[i + 1] == 10 &&
+                data[i + 2] == 13 && data[i + 3] == 10)
+                return i + 4;
+        }
+
+        return -1;
+    }
+
 }

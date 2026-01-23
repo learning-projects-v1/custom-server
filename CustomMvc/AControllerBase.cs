@@ -1,6 +1,8 @@
-namespace CustomServeer;
+using CustomHttp;
 
-public abstract class ControllerBase
+namespace CustomMvc;
+
+public abstract class AControllerBase
 {
     public HttpContext Context
     {
