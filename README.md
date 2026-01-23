@@ -72,6 +72,34 @@ Content-Length: 27
 {"name":"Zakir","age":30}
 ```
 DTO is automatically deserialized and injected.
+
+## NuGet Package
+CustomServer is now published on NuGet.org.
+Install via CLI
+```
+dotnet add package CustomServer
+dotnet add package CustomServerMvc
+```
+
+## Basic Usage
+```
+var builder = new ApplicationBuilder();
+var router = new TrieRouter();
+
+router.MapControllers(Assembly.GetExecutingAssembly());
+builder.Use(async (context, next) =>
+{
+    await router.UseRouting()(context);
+    await next(context);
+});
+
+var pipeline = builder.Build();
+var server = new HttpServer(pipeline);
+
+server.Start();
+
+```
+
 ## What This Project Demonstrates
 - Strong understanding of HTTP internals
 - TCP stream handling and pitfalls
