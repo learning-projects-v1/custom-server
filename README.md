@@ -72,3 +72,9 @@ Content-Length: 27
 {"name":"Zakir","age":30}
 ```
 DTO is automatically deserialized and injected.
+## What This Project Demonstrates
+- Strong understanding of HTTP internals
+- TCP stream handling and pitfalls
+- Clean framework/application separation
+- Reflection-based extensibility
+- Practical system design thinking
