@@ -78,3 +78,11 @@ DTO is automatically deserialized and injected.
 - Clean framework/application separation
 - Reflection-based extensibility
 - Practical system design thinking
+
+## Why This Exists
+This project was built to deeply understand what frameworks like ASP.NET Core do under the hood, and to be able to explain and reason about:
+- Kestrel
+- middleware pipelines
+- model binding
+- routing
+- server performance tradeoffs
