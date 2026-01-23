@@ -1,4 +1,4 @@
-namespace CustomMvc;
+namespace CustomServerMvc;
 
 [AttributeUsage(AttributeTargets.Method)]
 public abstract class AHttpAttribute : Attribute

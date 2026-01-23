@@ -1,4 +1,4 @@
-using CustomMvc;
+using CustomServerMvc;
 
 namespace Test;
 public class MyController : AControllerBase

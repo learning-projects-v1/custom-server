@@ -1,7 +1,7 @@
 using System.Net.Sockets;
 using System.Text;
 
-namespace CustomMvc;
+namespace CustomServerHttp;
 
 public static class HttpErrorWriter
 {

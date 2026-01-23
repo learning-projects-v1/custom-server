@@ -25,7 +25,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CustomHttp\CustomHttp.csproj" />
+      <ProjectReference Include="..\CustomServerHttp\CustomServerHttp.csproj" />
     </ItemGroup>
 
 </Project>

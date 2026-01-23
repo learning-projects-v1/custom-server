@@ -1,8 +1,7 @@
-using System.Reflection;
+using CustomHttp;
 using CustomHttp.Middlewares;
 
-namespace CustomHttp;
-
+namespace CustomServerHttp;
 
 public static class ApplicationBuilderMiddlewareExtensions
 {
@@ -17,4 +16,4 @@ public static class ApplicationBuilderMiddlewareExtensions
         });
         return app;
     }
-}   
+}
